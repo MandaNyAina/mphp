@@ -1,3 +1,4 @@
+Options +FollowSymLinks
 Options -Indexes
 RewriteEngine On
 ServerSignature Off
@@ -7,12 +8,19 @@ ServerSignature Off
         Header set Content-Security-Policy "default-src 'self'"
         Header always set X-FRAME-OPTIONS "DENY"
         Header always set X-Content-Type-Options "nosniff"
+        Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
 </IfModule>
 
 <FilesMatch ".(htaccess|htpasswd|ini|psd|log|sh|env)$">
         Order Allow,Deny
         Deny from all
 </FilesMatch>
+
+<files ~ "^.*\.([Hh][Tt][Aa])">
+    order allow,deny
+    deny from all
+    satisfy all
+</files>
 
 # Mise en cache
 <IfModule mod_expires.c>
@@ -27,7 +35,7 @@ ServerSignature Off
 </IfModule>
 
 # Redirection to index.php
-RewriteCond $1 !^(index\.php|assets/.*\.(jpg|png|css|js|ttf|woff|woff2)|config/database/admin)
+RewriteCond $1 !^(index\.php|assets/.*\.(css|js|jpe?g|png|gif|pdf|docx|rtf|odf|ttf|woff|woff2)|config/database/admin)
 RewriteRule ^(.*)$ index.php/$1 [L]
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
