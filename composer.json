@@ -1,0 +1,30 @@
+{
+    "name": "vendor/pattern_php",
+    "description": "Framework based on PHP, help to create a perform web app",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Core\\Lib\\": "core/libs",
+            "Core\\Interfaces\\": "core/Interfaces",
+            "App\\Models\\": "src/Models",
+            "App\\Controllers\\": "src/Controllers"
+        }
+    },
+    "authors": [
+        {
+            "name": "Manda Ny Aina ANDRIANAIVO",
+            "email": "andrianaivomanda00@gmail.com"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-gd": "*"
+    },
+    "require-dev": {
+        "pestphp/pest": "^1.21"
+    }
+}

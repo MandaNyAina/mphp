@@ -1,0 +1,13 @@
+import '../js/jquery.js';
+import '../bootstrap/js/bootstrap.js';
+import '../fontawesome/js/all.js';
+import '../fontawesome/js/fontawesome.js';
+import '../fontawesome/js/brands.js';
+import '../fontawesome/js/regular.js';
+import '../fontawesome/js/solid.js';
+import '../angular/angular/angular.js';
+import '../js/app.module.js';
+import '../js/app.directive.js';
+import '../js/app.controller.js';
+document.getElementsByTagName("body")[0].setAttribute("ng-app","myApp");
+document.getElementsByTagName("body")[0].setAttribute("ng-controller","myCtrl");

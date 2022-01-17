@@ -1,0 +1,27 @@
+version: "2"
+services:
+  php:
+    user: ${USER_GROUP}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mphp
+    container_name: mphp
+    volumes:
+      - ${LOCAL_PROJECT_PATH}:/var/www/html
+      - ${LOCAL_PROJECT_PATH}/config/apache:/etc/apache2/sites-available
+    ports:
+      - ${PROJECT_PORT_MAP}
+    links:
+      - database:database
+
+  database:
+    image: mysql
+    volumes:
+      - ${LOCAL_PROJECT_PATH}/config/database/db-data:/etc/mysql/conf.d
+    ports:
+      - ${DATABASE_PORT_MAP}
+    environment:
+      - ${MYSQL_ROOT_PASSWORD}
+    security_opt:
+      - seccomp:unconfined
