@@ -141,7 +141,7 @@ On peut rendre directement la vue en utilisant `$this->render(view_path, $data)`
 
 Pour renvoyer une réponse pour une solution RestAPI avec MPHP : 
 
-> On peut faire directement `$this-send_response(message, status_code, $data);`, avec :
+> On peut faire directement `$this->send_response(message, status_code, $data);`, avec :
 
 - `message` : le message qu'on souhaite mettre dans la réponse
 - `status_code` : code de réponse HTTP, on utilise directement les variables constantes dans le dossier `config/Constant.php`. Par exemple `HTTP_OK` pour une réponse 200
