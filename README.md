@@ -93,7 +93,7 @@ La vue peut être un fichier`.html` ou`.php`, et doit imperativement dans le dos
 
 **Comment se passe avec l'interpolation ?** <br>
 
-Pour l'interpolation de la vue avec MPHP, on utilise #[], par exemple, pour afficher dans #[ user], on appelle load view dans contrôleur : `$this->render(view path, $data)` avec `$data = ['user' => "valeur"]
+Pour l'interpolation de la vue avec MPHP, on utilise #[ variable ], par exemple, pour afficher dans #[ user], on appelle load view dans contrôleur : `$this->render(view path, $data)` avec `$data = ['user' => "valeur"]
 
 **Les vues pour afficher une erreur** <br>
 
