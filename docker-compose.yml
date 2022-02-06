@@ -1,15 +1,15 @@
-version: "2"
+version: "3.7"
 services:
   php:
     user: ${USER_GROUP}
     build:
       context: .
+      target: development-env-stage
       dockerfile: Dockerfile
     image: mphp
     container_name: mphp
     volumes:
       - ${LOCAL_PROJECT_PATH}:/var/www/html
-      - ${LOCAL_PROJECT_PATH}/config/apache:/etc/apache2/sites-available
     ports:
       - ${PROJECT_PORT_MAP}
     links:
@@ -17,6 +17,7 @@ services:
 
   database:
     image: mysql
+    container_name: mphp_mysql_db
     volumes:
       - ${LOCAL_PROJECT_PATH}/config/database/db-data:/etc/mysql/conf.d
     ports:
