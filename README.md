@@ -116,7 +116,7 @@ Il faut mettre les fichiers de contrôleur dans le dossier `src/Controllers` com
 
 ![](https://raw.githubusercontent.com/MandaNyAina/mphp/images/controller_dossier.png) 
 
-Puis le code du contrôleur doit être ressemblé à :
+Puis le code du contrôleur doit ressembler à ça :
 
 ![](https://raw.githubusercontent.com/MandaNyAina/mphp/images/controller_file.png)
 
