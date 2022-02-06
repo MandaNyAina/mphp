@@ -49,6 +49,9 @@ class MphpCore implements MphpCoreInterface {
                 $path = str_replace("//", "/", $main_path.'/'.$directory.'/');
                 if (is_dir($path)) {
                     $result_path = self::get_result_path($path, $result_path, $file);
+                    if ($result_path !== null) {
+                        break;
+                    }
                 }
             }
         }
