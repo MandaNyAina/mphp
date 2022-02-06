@@ -29,7 +29,7 @@ MPHP : Aime - PHP. C'est un Framework open source qui permet au développeur web
 2 - Docker compose (Installation sur [Documentation Docker compose](https://docs.docker.com/compose/install/))
 
 <a name="proced"></a>
-### II - Procedure d'installation
+### II - Procédure d'installation
 
 1 - Cloner le projet
 
@@ -116,7 +116,7 @@ Il faut mettre les fichiers de contrôleur dans le dossier `src/Controllers` com
 
 ![](https://raw.githubusercontent.com/MandaNyAina/mphp/images/controller_dossier.png) 
 
-Puis le code du contrôleur doit être ressemblé à :
+Puis le code du contrôleur doit ressembler à ça :
 
 ![](https://raw.githubusercontent.com/MandaNyAina/mphp/images/controller_file.png)
 
