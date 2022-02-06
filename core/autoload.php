@@ -46,9 +46,6 @@
     # modules
     require 'libs/Plugins/Message.php';
     require 'libs/Plugins/Uploader.php';
-    if (CONFIG['type_app'] === "FULL") {
-        require 'libs/ViewsLoadModules.php';
-    }
 
     # routing
     require ROOT_PATH . "/routes/Routes.php";

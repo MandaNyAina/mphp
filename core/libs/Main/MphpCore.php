@@ -96,16 +96,16 @@ class MphpCore implements MphpCoreInterface {
         $views_manager = new MainViews();
         switch ($error_code) {
             case 404:
-                $views_manager->load_views('404/notfound');
+                $views_manager->load_views('404/notfound', ['page_name' => 'Not found']);
                 exit();
 
             case 403:
-                $views_manager->load_views('403/forbidden');
+                $views_manager->load_views('403/forbidden', ['page_name' => 'Not authorized']);
                 exit();
 
             case 500:
                 if (CONFIG['mode_env'] == 'production') {
-                    $views_manager->load_views('500/errorserver');
+                    $views_manager->load_views('500/errorserver', ['page_name' => 'Error server side']);
                 } else if (CONFIG['mode_env'] == 'development') {
                     echo '
                         <div class="alert alert-danger w-100">

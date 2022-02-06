@@ -4,6 +4,7 @@ namespace Core\Lib\Main;
 use Core\Interfaces\RouteRequestInterface;
 use Core\Interfaces\CoreInterface\RouteInterface;
 use Core\Lib\Main\MphpCore as MPHP;
+use ValueError as ValueErrorAlias;
 
 class MainRoutes implements RouteInterface {
     private ?string $method = null;
@@ -24,12 +25,12 @@ class MainRoutes implements RouteInterface {
         $controller_path = $directory_manager->controllers("", true);
         try {
             $controller_file = MPHP::get_file_in_folder($controller_path, "{$controller[0]}.php");
-            if ($controller_file === null) { throw new \ValueError("Controller : {$controller[0]} not found"); }
+            if ($controller_file === null) { throw new ValueErrorAlias("Controller : {$controller[0]} not found"); }
             $namespace_value = MPHP::get_namespace_by_php_file($controller_path, $controller_file);
             $controller_instance = MPHP::call_dynamic_class("\\App\\Controllers\\" . $namespace_value . $controller[0], $controller_file);
             $method_of_controller = $controller[1];
             $controller_instance->$method_of_controller($request);
-        } catch (\ValueError $error) {
+        } catch (ValueErrorAlias $error) {
             MPHP::show_error_server(500, $error);
         }
     }
