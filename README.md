@@ -29,7 +29,7 @@ MPHP : Aime - PHP. C'est un Framework open source qui permet au développeur web
 2 - Docker compose (Installation sur [Documentation Docker compose](https://docs.docker.com/compose/install/))
 
 <a name="proced"></a>
-### II - Procedure d'installation
+### II - Procédure d'installation
 
 1 - Cloner le projet
 
