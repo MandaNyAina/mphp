@@ -32,8 +32,8 @@ class MainControllers  implements ControllerInterface {
         return $this->models_instance->load_models($model_name);
     }
 
-    public function render(string $views_file, array $data = []): void {
-        $this->views_instance->load_views($views_file, $data);;
+    public function render(string $views_file, ?array $page_details = [], array $data = []): void {
+        $this->views_instance->load_views($views_file, $page_details, $data);
     }
 
 }

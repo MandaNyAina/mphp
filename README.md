@@ -51,7 +51,7 @@ MPHP : Aime - PHP. C'est un Framework open source qui permet au développeur web
 
 ![](https://raw.githubusercontent.com/MandaNyAina/mphp/images/structure_dossier.png)
 
-Specification pour chaque dossier :
+Spécification pour chaque dossier :
 
 | Dossier 	| Rôle                                                                                                                            	| Pour le développeur 	|
 |---------	|---------------------------------------------------------------------------------------------------------------------------------	|---------------------	|
@@ -128,14 +128,28 @@ Le nom du fichier devra identique au nom du controller et le namespace doit refl
 
 **Comment loader un model ?** <br>
 
-On peut instancier le modèle dans le constructeur du controller, par exemple pour inclure le modèle `TestModel`: 
+1 - On peut instancier le modèle dans le constructeur du controller, par exemple pour inclure le modèle `TestModel`: 
 > On doit créer un attribut privé de la class du controller `private TestModel $test model;` puis initier la valeur par `$this->test_model = $this-get_model('TestModel');` dans __construct du controller
+
+2 - On peut autoloader le modèle dans le fichier `core/includes.php`, puis l'instanciation du modèle dans le controller se fait par `new NomModel()` :
+> Dans le fichier includes.php, on ajoute juste `NomModel` dans la variable $models comme element du tableau
 
 **Comment afficher une vue ?** <br>
 
-On peut rendre directement la vue en utilisant `$this->render(view_path, $data)` dans le controller, par exemple si le template se trouve dans le `Templates/teste/testeViews.php` donc : 
+On peut rendre directement la vue en utilisant `$this->render(view_path, page_details, data)` dans le controller.
 
->`view_path => teste/testeViews` et `$data = [ 'user' => 'valeur' ]`<br>
+Les informations du render sont :
+
+- `view_path` **(Obligatoire)** : le fichier du template en partant du dossier templates/
+- `page_details` **(Optionnel)** : détails sur la page, cette variable est du type array, les paramètres possibles sont :
+  * `page_name` : nom de la page (Optionnel)
+  * `css_file` : nom du fichier de style css (Optionnel)
+  * `js_file` : nom du fichier javascript (Optionnel)
+- `data` **(Optionnel)** : donnee du page, de type array
+
+Par exemple si on veut charger le template dans `Templates/teste/testeViews.php` donc :
+
+>`$this->render('teste/testeViews', ['page_name' => 'Ma page'], ['user' => 'Rakoto']);`
 
 **Comment envoyer une réponse au client (API Rest) ?** <br>
 
