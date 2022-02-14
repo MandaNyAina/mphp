@@ -39,7 +39,9 @@ MPHP : Aime - PHP. C'est un Framework open source qui permet au développeur web
 
 `$ cd mphp/`
 
-3 - Puis lancer tout simplement Docker compose par la commande suivante
+3 - Changer le nom de l'image dans docker-compose.yml par le nom de votre projet
+
+4 - Puis lancer tout simplement Docker compose par la commande suivante
 
 `$ docker-compose up`
 
