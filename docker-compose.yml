@@ -7,7 +7,6 @@ services:
       target: development-env-stage
       dockerfile: Dockerfile
     image: mphp
-    container_name: mphp
     volumes:
       - ${LOCAL_PROJECT_PATH}:/var/www/html
     ports:
@@ -17,12 +16,11 @@ services:
 
   database:
     image: mysql
-    container_name: mphp_mysql_db
     volumes:
       - ${LOCAL_PROJECT_PATH}/config/database/db-data:/etc/mysql/conf.d
     ports:
       - ${DATABASE_PORT_MAP}
     environment:
-      - ${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=root
     security_opt:
       - seccomp:unconfined
