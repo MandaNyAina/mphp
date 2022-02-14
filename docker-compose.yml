@@ -21,6 +21,6 @@ services:
     ports:
       - ${DATABASE_PORT_MAP}
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=toor
     security_opt:
       - seccomp:unconfined
