@@ -68,6 +68,7 @@ class MainRoutes implements RouteInterface {
     private function create_controller(object $server_request, string $controller_name): void {
         $RouteRequestParams = new RouteRequestInterface($server_request);
         $this->call_controller($RouteRequestParams, $controller_name);
+        exit;
     }
 
     public function get(string $route, string $controller): void {
