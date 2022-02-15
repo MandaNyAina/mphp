@@ -69,15 +69,15 @@ class MphpCore implements MphpCoreInterface {
 
     public static function get_namespace_by_php_file(string $base_path, string $file): string {
         $base_path_array = explode('/', $base_path);
-        $file_array = explode('/', $file);
-        $array_diff = [];
-        foreach ($file_array as $each_file_properties) {
+        $file_path_array = explode('/', $file);
+        $file_path_without_base_path_array = [];
+        foreach ($file_path_array as $each_file_properties) {
             if (!in_array($each_file_properties, $base_path_array)) {
-                $array_diff[] = $each_file_properties;
+                $file_path_without_base_path_array[] = $each_file_properties;
             }
         }
-        array_pop($array_diff);
-        return count($array_diff) ? implode('\\', $array_diff).'\\' : '';
+        array_pop($file_path_without_base_path_array);
+        return count($file_path_without_base_path_array) ? implode('\\', $file_path_without_base_path_array).'\\' : '';
     }
 
     public static function call_dynamic_class(string $class_name, string $class_file_path) {
