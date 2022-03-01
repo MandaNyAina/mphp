@@ -1,5 +1,5 @@
 @import '../bootstrap/css/bootstrap.min.css';
-@import '../fontawesome/css/all.css';
+@import '../fontawesome/css/all.min.css';
 
 @font-face {
     font-family: 'Roboto';
