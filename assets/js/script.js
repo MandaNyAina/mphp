@@ -1,7 +1,7 @@
 import '../js/jquery.js';
 import '../bootstrap/js/bootstrap.min.js';
-import '../fontawesome/js/all.js';
-import '../fontawesome/js/fontawesome.js';
+import '../fontawesome/js/all.min.js';
+import '../fontawesome/js/fontawesome.min.js';
 import '../angular/angular.min.js';
 import '../js/app.module.js';
 import '../js/app.directive.js';
