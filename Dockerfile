@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y wget libfreetype6-dev libjpeg62-turbo-d
     && php composer-setup.php \
     && php -r "unlink('composer-setup.php');" \
     && mv composer.phar /usr/local/bin/composer \
+    && composer config --no-plugins allow-plugins.pestphp/pest-plugin false \
     && composer install
 
 CMD ["php", "-S", "0.0.0.0:80"]
