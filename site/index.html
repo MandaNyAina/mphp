@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M-PHP · PHP typé de bout en bout, Svelte pour l'interface</title>
+  <meta name="description" content="Framework PHP léger et sécurisé avec une interface Svelte 5 + TypeScript. Types générés depuis le PHP, zéro dépendance en production, déploiement par un simple zip ou un fichier PHAR.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#">M-PHP</a>
+  <nav>
+    <a href="#demarrage">Démarrage</a>
+    <a href="#concepts">Concepts</a>
+    <a href="#securite">Sécurité</a>
+    <a href="#debug">Debug</a>
+    <a href="#deploiement">Déploiement</a>
+    <a href="#commandes">Commandes</a>
+    <a href="https://github.com/MandaNyAina/mphp">GitHub</a>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>PHP typé de bout en bout.<br>Svelte pour l'interface.<br>Un fichier pour déployer.</h1>
+    <p class="lead">Un framework PHP léger, sécurisé par défaut, où le PHP reste la source de vérité : les types TypeScript, les routes et le client d'API sont <strong>générés</strong> depuis vos contrôleurs.</p>
+    <ul class="badges">
+      <li>PHP 8.4+ (testé sur 8.5)</li>
+      <li>Svelte 5 + TypeScript + Vite</li>
+      <li>0 dépendance en production</li>
+      <li>SQLite / MySQL / PostgreSQL</li>
+      <li>CSRF · CSP stricte · libsodium</li>
+    </ul>
+    <div class="cta">
+      <a class="btn primary" href="#demarrage">Démarrer</a>
+      <a class="btn" href="https://github.com/MandaNyAina/mphp">Code source</a>
+    </div>
+  </div>
+
+  <section id="pourquoi">
+    <h2>Pourquoi M-PHP</h2>
+    <div class="grid">
+      <div class="card"><h3>Types de bout en bout</h3><p>Une faute de frappe dans un nom de route, un champ de formulaire oublié ou un mauvais type de réponse sont des erreurs de compilation, sans OpenAPI ni serveur Node.</p></div>
+      <div class="card"><h3>Léger à prendre en main</h3><p>Un contrôleur, des attributs, une page Svelte. SQLite par défaut : rien à installer pour commencer.</p></div>
+      <div class="card"><h3>Sécurisé par défaut</h3><p>Requêtes préparées, CSRF, CSP sans inline, sessions durcies, uploads vérifiés sur le contenu, <code>$fillable</code> obligatoire.</p></div>
+      <div class="card"><h3>Déploiement trivial</h3><p><code>php bin/mphp package</code> pour un zip, <code>php bin/mphp compile</code> pour un unique fichier PHAR. Pas de <code>vendor/</code> ni de Node en production.</p></div>
+    </div>
+  </section>
+
+  <section id="demarrage">
+    <h2>Démarrage</h2>
+    <pre><code>composer install
+npm install
+cp .env.example .env
+php bin/mphp key:generate
+php bin/mphp migrate
+
+php bin/mphp dev      # PHP http://127.0.0.1:8000 + Vite (rechargement à chaud)</code></pre>
+    <p>Avec Docker : <code>docker compose up --build</code> puis <a href="http://localhost:8000">localhost:8000</a>.</p>
+    <table>
+      <tr><th>Dossier</th><th>Rôle</th></tr>
+      <tr><td><code>app/Controllers</code></td><td>Contrôleurs ; les routes sont des attributs PHP</td></tr>
+      <tr><td><code>app/Models</code></td><td>Modèles (<code>$fillable</code> obligatoire)</td></tr>
+      <tr><td><code>app/Data</code></td><td>Données envoyées au navigateur, converties en types TypeScript</td></tr>
+      <tr><td><code>app/Requests</code></td><td>Corps de requête validés et typés (<code>FormRequest</code>)</td></tr>
+      <tr><td><code>resources/pages</code></td><td>Une page Svelte par fichier</td></tr>
+      <tr><td><code>database/migrations</code></td><td>Migrations</td></tr>
+      <tr><td><code>public/</code></td><td>La seule racine web</td></tr>
+      <tr><td><code>core/</code></td><td>Le framework (<code>Mphp\</code>)</td></tr>
+    </table>
+  </section>
+
+  <section id="concepts">
+    <h2>Concepts</h2>
+
+    <h3>1. Une entrée validée et typée</h3>
+    <pre><code>final readonly class NameInput extends FormRequest
+{
+    public function __construct(
+        #[Rule('required|string|max:50')]
+        public string $firstname,
+    ) {}
+}</code></pre>
+
+    <h3>2. Un contrôleur avec ses routes</h3>
+    <pre><code>#[Prefix('/api/names')]
+final class NameController
+{
+    #[Put('/{id:\d+}', name: 'names.update')]
+    public function update(NameInput $input, int $id): NameData   // 422 automatique si invalide
+    {
+        $name = Name::find($id) ?? throw new HttpException(404, 'Name not found.');
+
+        return NameData::fromModel($name->update($input->toArray()));
+    }
+}</code></pre>
+
+    <h3>3. Générer les types</h3>
+    <pre><code>php bin/mphp types:generate</code></pre>
+
+    <h3>4. Les utiliser côté Svelte</h3>
+    <pre><code>const updated = await api('names.update', { params: { id: 3 }, body: { firstname: 'Ada' } });
+//    ^ NameData : route, paramètres, corps et réponse viennent du PHP
+
+const form = new Form('names.store', { firstname: '' });
+// form.errors.firstname, form.processing, await form.submit()</code></pre>
+    <div class="note">Un paramètre manquant, un champ de corps oublié ou un nom de route inexistant ne compilent plus.</div>
+
+    <h3>Ce que le framework fournit</h3>
+    <table>
+      <tr><th>Besoin</th><th>API</th></tr>
+      <tr><td>Requête / réponse</td><td><code>Request</code>, <code>Response::json/html/redirect/noContent</code></td></tr>
+      <tr><td>Retour d'action</td><td><code>Response</code> ; tableau/objet → JSON ; chaîne → HTML ; <code>null</code> → 204</td></tr>
+      <tr><td>Injection</td><td>Typez la dépendance dans le constructeur ou l'action</td></tr>
+      <tr><td>Middleware</td><td><code>'csrf'</code>, <code>'throttle:5,60'</code>, ou votre classe</td></tr>
+      <tr><td>Validation</td><td><code>FormRequest</code> + <code>#[Rule]</code>, ou <code>Validator::validate()</code></td></tr>
+      <tr><td>Base de données</td><td><code>$db->table('t')->where('a', '&gt;=', 1)-&gt;get()</code> ; <code>Model::create/find/update/delete</code></td></tr>
+      <tr><td>Chiffrement</td><td><code>Crypto::encrypt/decrypt/sign</code> ; <code>Passwords::hash/verify</code></td></tr>
+      <tr><td>Upload</td><td><code>Uploader::store($_FILES['f'], 'image')</code></td></tr>
+      <tr><td>Erreurs</td><td><code>throw new HttpException(404, '…')</code></td></tr>
+    </table>
+  </section>
+
+  <section id="securite">
+    <h2>Sécurité par défaut</h2>
+    <table>
+      <tr><th>Risque</th><th>Protection</th></tr>
+      <tr><td>Injection SQL</td><td>Requêtes préparées partout, identifiants validés, opérateurs en liste blanche, <code>update</code>/<code>delete</code> sans <code>where</code> refusés</td></tr>
+      <tr><td>CSRF</td><td>Jeton synchronisé en session, middleware global (<code>X-CSRF-Token</code>)</td></tr>
+      <tr><td>XSS</td><td>Échappement par défaut (<code>e()</code>, Svelte), props en JSON sûr, CSP <code>script-src 'self'</code> sans inline</td></tr>
+      <tr><td>Mass-assignment</td><td><code>$fillable</code> obligatoire sur les modèles</td></tr>
+      <tr><td>Fichiers sensibles</td><td>Seul <code>public/</code> est servi ; <code>.env</code> et <code>storage/</code> ne sont jamais exposés</td></tr>
+      <tr><td>Uploads</td><td>Type détecté sur le contenu, nom aléatoire, taille limitée</td></tr>
+      <tr><td>Chiffrement</td><td>libsodium (authentifié), nonce aléatoire, <code>APP_KEY</code></td></tr>
+      <tr><td>Sessions</td><td>HttpOnly, SameSite=Lax, Secure en HTTPS, mode strict</td></tr>
+      <tr><td>Force brute</td><td>Middleware <code>throttle</code> sans Redis</td></tr>
+      <tr><td>Fuite d'information</td><td>Erreur 500 générique en production, détails seulement avec <code>APP_DEBUG=true</code></td></tr>
+    </table>
+  </section>
+
+  <section id="debug">
+    <h2>Barre de debug</h2>
+    <p>Avec <code>APP_DEBUG=true</code>, chaque page HTML reçoit une barre en bas d'écran : statut, route, temps, mémoire et <strong>chaque requête SQL</strong> avec sa durée. Les requêtes répétées sont signalées (piste N+1). Elle fonctionne sans JavaScript, donc sous la CSP stricte. Les appels d'API reçoivent un en-tête <code>Server-Timing</code>, visible dans l'onglet Réseau du navigateur. En production, rien n'est ajouté.</p>
+  </section>
+
+  <section id="deploiement">
+    <h2>Déploiement</h2>
+    <div class="grid">
+      <div class="card"><h3>Zip</h3><p><code>php bin/mphp package</code> produit <code>dist/release.zip</code> : front compilé et cache des routes inclus, sans <code>vendor/</code> ni <code>node_modules/</code>.</p></div>
+      <div class="card"><h3>PHAR</h3><p><code>php bin/mphp compile</code> produit <code>dist/mphp.phar</code>, un seul fichier. <code>php mphp.phar serve</code> suffit ; <code>.env</code> et <code>storage/</code> restent à côté.</p></div>
+      <div class="card"><h3>Docker</h3><p><code>docker compose up --build</code> : image PHP 8.5 + Apache, front compilé en amont, SQLite ou MySQL en option.</p></div>
+    </div>
+    <pre><code># Zip ou PHAR, sur le serveur
+cp .env.example .env        # APP_ENV=production, APP_DEBUG=false
+php bin/mphp key:generate
+php bin/mphp migrate
+# racine web = public/   (le .htaccess racine suffit sur un mutualisé)</code></pre>
+    <pre><code># PHAR seul
+php mphp.phar key:generate &amp;&amp; php mphp.phar migrate &amp;&amp; php mphp.phar serve --port=8000</code></pre>
+    <p>Nginx : <code>root /chemin/vers/public; location / { try_files $uri /index.php?$query_string; }</code> puis le bloc PHP-FPM habituel.</p>
+  </section>
+
+  <section id="commandes">
+    <h2>Commandes</h2>
+    <table>
+      <tr><th>Commande</th><th>Rôle</th></tr>
+      <tr><td><code>php bin/mphp dev</code></td><td>PHP + Vite ensemble (développement)</td></tr>
+      <tr><td><code>php bin/mphp serve</code></td><td>Serveur PHP seul</td></tr>
+      <tr><td><code>php bin/mphp routes</code></td><td>Liste des routes</td></tr>
+      <tr><td><code>make:controller X</code> · <code>make:model X</code> · <code>make:migration create_x_table</code></td><td>Générateurs</td></tr>
+      <tr><td><code>migrate</code> · <code>migrate:rollback</code> · <code>migrate:status</code></td><td>Base de données</td></tr>
+      <tr><td><code>types:generate</code></td><td>Types TypeScript et helper de routes depuis le PHP</td></tr>
+      <tr><td><code>key:generate</code></td><td>Clé de chiffrement <code>APP_KEY</code></td></tr>
+      <tr><td><code>build</code></td><td>Front de production + cache des routes</td></tr>
+      <tr><td><code>package</code> · <code>compile</code></td><td>Zip prêt à envoyer · fichier PHAR unique</td></tr>
+      <tr><td><code>composer test</code> · <code>npm run check</code></td><td>Tests Pest · vérification TypeScript/Svelte</td></tr>
+    </table>
+  </section>
+</main>
+
+<footer>
+  M-PHP · Licence MIT · <a href="https://github.com/MandaNyAina/mphp">github.com/MandaNyAina/mphp</a>
+</footer>
+</body>
+</html>

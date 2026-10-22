@@ -1,5 +1,12 @@
-.idea
-.vscode
-.itel
 /vendor/
-composer.lock
+/node_modules/
+/dist/
+/docs/
+/public/build/
+/public/hot
+.env
+.idea/
+.vscode/
+.phpunit.result.cache
+.DS_Store
+.phpunit.cache/

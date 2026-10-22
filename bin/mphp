@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$base = dirname(__DIR__);
+
+require is_file($base . '/vendor/autoload.php') ? $base . '/vendor/autoload.php' : $base . '/core/autoload.php';
+
+exit((new Mphp\Console\Console(new Mphp\App($base)))->run($argv));

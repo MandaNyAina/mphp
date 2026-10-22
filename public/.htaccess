@@ -1,0 +1,22 @@
+Options -Indexes -MultiViews
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Never serve dotfiles/dot-folders (except /.well-known) nor the Vite dev marker
+    RewriteRule (^|/)\.(?!well-known) - [F]
+    RewriteRule ^hot$ - [F]
+
+    # Hashed build assets can be cached forever
+    RewriteRule ^build/ - [E=IMMUTABLE:1]
+
+    # Everything that is not a real file goes to the front controller
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set Cache-Control "public, max-age=31536000, immutable" env=IMMUTABLE
+</IfModule>

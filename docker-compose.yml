@@ -1,26 +1,32 @@
-version: "3.7"
+# Default: just the app on SQLite.            docker compose up --build
+# With MySQL:                                  docker compose --profile mysql up --build   (set DB_CONNECTION=mysql, DB_HOST=db in .env)
+# With a DB admin UI (dev only, localhost):    docker compose --profile tools up
 services:
-  php:
-    user: ${USER_GROUP}
+  app:
     build:
       context: .
-      target: development-env-stage
-      dockerfile: Dockerfile
-    image: mphp
-    volumes:
-      - ${LOCAL_PROJECT_PATH}:/var/www/html
+      target: production
     ports:
-      - ${PROJECT_PORT_MAP}
-    links:
-      - database:database
+      - "8000:80"
+    env_file:
+      - .env
+    volumes:
+      - ./storage:/var/www/html/storage
 
-  database:
-    image: mysql
-    volumes:
-      - ${LOCAL_PROJECT_PATH}/config/database/db-data:/etc/mysql/conf.d
-    ports:
-      - ${DATABASE_PORT_MAP}
+  db:
+    image: mysql:8.4
+    profiles: ["mysql"]
     environment:
-      - MYSQL_ROOT_PASSWORD=toor
-    security_opt:
-      - seccomp:unconfined
+      MYSQL_DATABASE: ${DB_DATABASE:-mphp}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/mysql
+
+  adminer:
+    image: adminer:5
+    profiles: ["tools"]
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  db-data:

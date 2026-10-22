@@ -1,4 +1,0 @@
-<?php
-
-$models = [];
-$helpers = [];

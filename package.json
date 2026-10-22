@@ -1,0 +1,20 @@
+{
+  "name": "mphp",
+  "version": "1.0.0",
+  "description": "M-PHP front end (Svelte 5 + TypeScript + Vite)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/node": "^22.20.5",
+    "svelte": "^5.57.2",
+    "svelte-check": "^4.7.7",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5"
+  }
+}

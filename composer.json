@@ -1,30 +1,45 @@
 {
-    "name": "vendor/pattern_php",
-    "description": "Framework based on PHP, help to create a perform web app",
+    "name": "mandanyaina/mphp",
+    "description": "M-PHP: a tiny, secure PHP 8.5 framework with a Svelte + TypeScript front end",
     "type": "project",
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Core\\Lib\\": "core/libs",
-            "Core\\Interfaces\\": "core/Interfaces",
-            "App\\Models\\": "src/Models",
-            "App\\Controllers\\": "src/Controllers"
-        }
-    },
     "authors": [
         {
             "name": "Manda Ny Aina ANDRIANAIVO",
             "email": "andrianaivomanda00@gmail.com"
         }
     ],
-    "minimum-stability": "beta",
     "require": {
+        "php": ">=8.4",
         "ext-pdo": "*",
         "ext-json": "*",
-        "ext-openssl": "*",
-        "ext-gd": "*"
+        "ext-mbstring": "*",
+        "ext-sodium": "*"
     },
     "require-dev": {
-        "pestphp/pest": "^1.21"
-    }
+        "pestphp/pest": "^5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mphp\\": "core/",
+            "App\\": "app/"
+        },
+        "files": [
+            "core/helpers.php"
+        ]
+    },
+    "scripts": {
+        "dev": "@php bin/mphp dev",
+        "serve": "@php bin/mphp serve",
+        "test": "pest",
+        "build": "@php bin/mphp build"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

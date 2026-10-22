@@ -1,33 +1,32 @@
-FROM php:7.4-cli AS development-env-stage
-COPY . /var/www/html
-WORKDIR /var/www/html
-RUN apt-get update && apt-get install -y wget libfreetype6-dev libjpeg62-turbo-dev libpng-dev libzip-dev libonig-dev libcurl4-openssl-dev libxml2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install json pdo pdo_mysql zip gd mbstring curl xml  \
-    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-    && php composer-setup.php \
-    && php -r "unlink('composer-setup.php');" \
-    && mv composer.phar /usr/local/bin/composer \
-    && composer install
+# --- Stage 1: build the front end (Svelte + TypeScript -> public/build) -----------------
+FROM node:22-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY vite.config.ts svelte.config.js tsconfig.json ./
+COPY resources ./resources
+RUN npm run build
 
-CMD ["php", "-S", "0.0.0.0:80"]
+# --- Stage 2: PHP runtime: no Composer, no Node, no dev tools ---------------------------
+FROM php:8.5-apache AS production
 
-FROM php:7.4-apache AS production-env-stage
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+
+RUN docker-php-ext-install pdo_mysql \
+    && a2enmod rewrite headers \
+    && sed -ri "s#/var/www/html#${APACHE_DOCUMENT_ROOT}#g" /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && printf 'ServerTokens Prod\nServerSignature Off\n' > /etc/apache2/conf-available/hardening.conf \
+    && a2enconf hardening \
+    && printf 'expose_php=0\nopcache.validate_timestamps=0\n' > /usr/local/etc/php/conf.d/mphp.ini
+
 WORKDIR /var/www/html
-COPY --from=development-env-stage /var/www/html .
-COPY --from=development-env-stage /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
-COPY --from=development-env-stage /usr/local/lib/php/extensions/no-debug-non-zts-20190902 /usr/local/lib/php/extensions/no-debug-non-zts-20190902
-RUN apt-get update && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev libzip-dev libonig-dev libcurl4-openssl-dev libxml2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && cp config/apache/mphp.apache.conf /etc/apache2/sites-available/mphp.apache.conf \
-    && a2enmod rewrite \
-    && cp config/apache/mphp.apache.conf /etc/apache2/sites-available \
-    && a2ensite mphp.apache.conf \
-    && touch /var/log/apache2/mphp.error.log /var/log/apache2/mphp.access.log  \
-    && chmod 775 /var/log/apache2/mphp.error.log \
-    && chmod 775 /var/log/apache2/mphp.access.log \
-    && service apache2 restart \
-    && usermod -u 1000 www-data \
-    && chown www-data:www-data /var/log/apache2/mphp.error.log \
-    && chown www-data:www-data /var/log/apache2/mphp.access.log
+COPY --chown=www-data:www-data . .
+COPY --from=assets --chown=www-data:www-data /app/public/build ./public/build
+
+# Only storage/ must be writable (logs, cache, uploads, SQLite file).
+RUN mkdir -p storage/logs storage/cache storage/uploads \
+    && chown -R www-data:www-data storage \
+    && php bin/mphp routes:cache
+
+USER www-data
+EXPOSE 80
